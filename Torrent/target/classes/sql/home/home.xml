@@ -10,7 +10,7 @@
 			DARKHOWK.WISHLIST
 	</select>
 	
-	<select id ="getSearchType" parameterType="HashMap" resultType="jaav.util.HashMap">
+	<select id ="getSearchType" parameterType="HashMap" resultType="java.util.HashMap">
 		SELECT
 			*
 		FROM
