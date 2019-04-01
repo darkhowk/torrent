@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LOG">
+	<insert id="insert" parameterType="java.util.HashMap">
+		INSERT INTO
+			DARKHOWK.PROGRAM_LOG
+			VALUES
+			(
+				  PROGRAM_LOG_SEQ.NEXTVALUE
+				, SYSDATE
+				, #{type}
+				, #{stat}
+				, #{name}
+			)
+	</insert>
+</mapper>
