@@ -1,4 +1,4 @@
-package comm.util;
+package torrent.comm.controller;
 
 import java.sql.Connection;
 import java.util.List;
@@ -10,11 +10,12 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class CommSession implements SqlSession{
 
 	String mapKey;
-	
+
 	@Override
 	public <T> T selectOne(String statement) {
 		// TODO Auto-generated method stub
@@ -47,19 +48,37 @@ public class CommSession implements SqlSession{
 
 	@Override
 	public <K, V> Map<K, V> selectMap(String statement, String mapKey) {
-		this.mapKey = mapKey;
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey) {
-		this.mapKey = mapKey;
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds) {
-		this.mapKey = mapKey;
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> Cursor<T> selectCursor(String statement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> Cursor<T> selectCursor(String statement, Object parameter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> Cursor<T> selectCursor(String statement, Object parameter, RowBounds rowBounds) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -177,26 +196,4 @@ public class CommSession implements SqlSession{
 		return null;
 	}
 	
-	public String getColumn() {
-		return mapKey;
-	}
-
-	@Override
-	public <T> Cursor<T> selectCursor(String statement) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> Cursor<T> selectCursor(String statement, Object parameter) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> Cursor<T> selectCursor(String statement, Object parameter, RowBounds rowBounds) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
