@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+import comm.torrent.service.TorrentLogService;
+
 public class TorrentLog {
 
 	public final String ERROR = "0";

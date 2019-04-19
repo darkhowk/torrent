@@ -1,8 +1,11 @@
-package comm.torrent;
+package comm.torrent.service.impl;
 
 import java.util.HashMap;
 
 import javax.annotation.Resource;
+
+import comm.torrent.dao.TorrentLogDao;
+import comm.torrent.service.TorrentLogService;
 
 public class TorrentLogServiceImpl implements TorrentLogService{
 

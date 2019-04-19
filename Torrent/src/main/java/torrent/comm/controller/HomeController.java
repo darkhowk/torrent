@@ -50,7 +50,8 @@ public class HomeController {
 	@RequestMapping(value = "main", method = RequestMethod.GET)
 	public ModelAndView home(Locale locale, Model model) throws IOException, JSONException {
 		
-		ModelAndView mv = new ModelAndView("main");
+		ModelAndView mv = new ModelAndView();
+
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		
@@ -58,53 +59,9 @@ public class HomeController {
 		
 		model.addAttribute("serverTime", formattedDate );
 
-		// 메뉴 리스트 == 실행 리스트
-	//	List<HashMap<String, Object>> a = homeService.getMenuList();
-		//mv.addObject("list" , a);
+		mv = TorrentCheck();
+		mv.addObject("page", "home.jsp");
 		
-		
-		URL url = new URL("http://memorandum.tk:9091/transmission/rpc/");
-
-		TransmissionClient tc = new TransmissionClient(url);
-		
-		List<TorrentStatus> list = tc.getAllTorrents();
-		
-		ArrayList<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
-		for(TorrentStatus item : list) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("NAME", item.getName());
-			// item.STATUS_CHECK_WAIT == 1
-			// item.STATUS_CHECKING == 2
-			// item.STATUS_DOWNLOADING == 4	
-			// item.STATUS_FINISHED == 16
-			// item.STATUS_SEEDING == 16
-			// SUCC === 6
-			String state = "";
-			
-			if (item.getStatus() == item.STATUS_CHECK_WAIT) {
-				state = "STATUS_CHECK_WAIT";
-			}
-			if (item.getStatus() == item.STATUS_CHECK_WAIT) {
-				state = "STATUS_CHECK_WAIT";
-			}
-			if (item.getStatus() == item.STATUS_DOWNLOADING) {
-				state = "STATUS_DOWNLOADING";
-			}
-			if (item.getStatus() == item.STATUS_FINISHED) {
-				state = "STATUS_FINISHED";
-			}
-			if (item.getStatus() == item.STATUS_SEEDING) {
-				state = "STATUS_SEEDING";
-			}
-			if (item.getStatus() == 6) {
-				state = "SUCC";
-			}
-			
-			map.put("STATE", state);
-			data.add(map);
-		}
-		
-		mv.addObject("data", data);
 		return mv;
 	}
 	/**
@@ -335,6 +292,71 @@ public class HomeController {
 		}
 
 		
+	}
+	
+	public static ModelAndView TorrentCheck() {
+
+		ModelAndView mv = new ModelAndView("main");
+		
+		try {
+			int down = 0;
+			int all = 0;
+			
+			
+			URL url = new URL("http://memorandum.tk:9091/transmission/rpc/");
+	
+			TransmissionClient tc = new TransmissionClient(url);
+			
+			List<TorrentStatus> list = tc.getAllTorrents();
+			
+			ArrayList<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
+			for(TorrentStatus item : list) {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("NAME", item.getName());
+				// item.STATUS_CHECK_WAIT == 1
+				// item.STATUS_CHECKING == 2
+				// item.STATUS_DOWNLOADING == 4	
+				// item.STATUS_FINISHED == 16
+				// item.STATUS_SEEDING == 16
+				// SUCC === 6
+				String state = "";
+				
+				
+				
+				if (item.getStatus() == item.STATUS_CHECK_WAIT) {
+					state = "STATUS_CHECK_WAIT";
+				}
+				if (item.getStatus() == item.STATUS_CHECK_WAIT) {
+					state = "STATUS_CHECK_WAIT";
+				}
+				if (item.getStatus() == item.STATUS_DOWNLOADING) {
+					state = "STATUS_DOWNLOADING";
+					down++;
+				}
+				if (item.getStatus() == item.STATUS_FINISHED) {
+					state = "STATUS_FINISHED";
+				}
+				if (item.getStatus() == item.STATUS_SEEDING) {
+					state = "STATUS_SEEDING";
+				}
+				if (item.getStatus() == 6) {
+					state = "SUCC";
+				}
+				
+				map.put("STATE", state);
+				data.add(map);
+				
+				all++;
+			}
+			
+			mv.addObject("data", data);
+			mv.addObject("down", down);
+			mv.addObject("all", all);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return mv;
 	}
 	
 }

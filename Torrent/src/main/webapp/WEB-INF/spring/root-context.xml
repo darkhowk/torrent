@@ -16,8 +16,8 @@
 	<!-- data soruce -->
 	<bean id="dataSourceSpied" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >
         <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
-        <property name="url" value="jdbc:oracle:thin:@memorandum.tk:1521:ORCLCDB" />
-        <property name="username" value="darkhowk" />
+        <property name="url" value="jdbc:oracle:thin:@memorandum.tk:1521:xe" />
+        <property name="username" value="TORRENT" />
         <property name="password" value="V9gmuHsA" />
     </bean>
   
@@ -35,7 +35,7 @@
 	<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="SqlSessionFactory">
 	    <property name="dataSource" ref="dataSource" />
 	    <property value="classpath:mybatis-config.xml" name="configLocation" />
-	    <property value="classpath:/sql/**/*.xml" name="mapperLocations" />
+	    <property value="classpath:/sql/**.xml" name="mapperLocations" />
 	</bean>
 
 	<!-- sqlSessionTemplate -->

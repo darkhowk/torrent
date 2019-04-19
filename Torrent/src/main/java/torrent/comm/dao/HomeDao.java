@@ -4,15 +4,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import comm.util.CommSession;
+import torrent.comm.controller.CommSession;
 
 @Repository(value="homeDao")
-public class HomeDao extends CommSession {
+public class HomeDao {
 
+	
+	@Autowired
 	private SqlSession session;
-
+	
     public List<HashMap<String, Object>> getMenuList() {
 		return session.selectList("HOME.getMenuList");
 	}

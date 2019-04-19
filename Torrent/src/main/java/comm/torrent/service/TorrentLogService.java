@@ -1,4 +1,4 @@
-package comm.torrent;
+package comm.torrent.service;
 
 import java.util.HashMap;
 
