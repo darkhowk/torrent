@@ -1,4 +1,4 @@
-package torrent.comm.controller;
+package comm.util;
 
 import java.sql.Connection;
 import java.util.List;
@@ -10,12 +10,11 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
 
+@SuppressWarnings("rawtypes")
 public class CommSession implements SqlSession{
 
 	String mapKey;
-
 	@Override
 	public <T> T selectOne(String statement) {
 		// TODO Auto-generated method stub

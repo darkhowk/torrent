@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import torrent.comm.service.AdminService;
 
 @Controller
+@RequestMapping(value ="/admin", method = {RequestMethod.GET, RequestMethod.POST})
 public class AdminController {
 
 	
@@ -30,7 +31,7 @@ public class AdminController {
 	 * @throws JSONException 
 	 * @throws IOException 
 	 */
-	@RequestMapping(value = "comm_code.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/comm_code", method = {RequestMethod.GET, RequestMethod.POST})
 	public ModelAndView comm_code(Locale locale, Model model) throws IOException, JSONException {
 		ModelAndView mv = new ModelAndView();
 		mv = HomeController.TorrentCheck();

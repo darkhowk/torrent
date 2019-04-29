@@ -20,7 +20,7 @@ public class TorrentDel {
 		
 		URL url;
 		try {
-			url = new URL("http://memorandum.tk:9091/transmission/rpc/");
+			url = new URL("http://175.193.19.231:9091/transmission/rpc/");
 
 			TransmissionClient tc = new TransmissionClient(url);
 

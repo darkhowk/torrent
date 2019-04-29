@@ -1,21 +1,5 @@
 package ca.benow.transmission;
 
-import ca.benow.transmission.model.AddedTorrentInfo;
-import ca.benow.transmission.model.DuplicateTorrentInfo;
-import ca.benow.transmission.model.SessionStatus;
-import ca.benow.transmission.model.TorrentStatus;
-import ca.benow.transmission.model.TorrentStatus.TorrentField;
-import ca.benow.transmission.model.TrackerPair;
-import ca.benow.transmission.model.TransmissionSession;
-import ca.benow.transmission.model.TransmissionSession.SessionField;
-import ca.benow.transmission.model.TransmissionSession.SessionPair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,6 +13,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.benow.transmission.model.AddedTorrentInfo;
+import ca.benow.transmission.model.DuplicateTorrentInfo;
+import ca.benow.transmission.model.SessionStatus;
+import ca.benow.transmission.model.TorrentStatus;
+import ca.benow.transmission.model.TorrentStatus.TorrentField;
+import ca.benow.transmission.model.TrackerPair;
+import ca.benow.transmission.model.TransmissionSession;
+import ca.benow.transmission.model.TransmissionSession.SessionField;
+import ca.benow.transmission.model.TransmissionSession.SessionPair;
 
 /**
  * The main class for interacting with transmission. Create an instance with
@@ -56,7 +57,8 @@ import java.util.Map;
  */
 public class TransmissionClient {
 
-    private static final String ID_RECENTLY_ACTIVE = "recently-active";
+    @SuppressWarnings("unused")
+	private static final String ID_RECENTLY_ACTIVE = "recently-active";
     private static final String SESSION_HEADER = "X-Transmission-Session-Id";
     private static final int DEFAULT_PORT = 9091;
 
@@ -66,8 +68,8 @@ public class TransmissionClient {
     public static final int PRIORITY_HIGH = 1;
 
     private final URL url;
-    private String user;
-    private String pass;
+//    private String user;
+//    private String pass;
     private String userCrypt;
     private String sessionId;
     private static int tag = 0;

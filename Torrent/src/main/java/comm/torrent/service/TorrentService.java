@@ -7,4 +7,6 @@ public interface TorrentService {
 
 	List<HashMap<String, Object>> getUrl();
 
+	void torrentLogInsert(HashMap<String, Object> data);
+
 }

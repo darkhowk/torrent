@@ -31,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ca.benow.transmission.TransmissionClient;
 import ca.benow.transmission.model.TorrentStatus;
+import comm.util.torrentmap;
 import torrent.comm.service.HomeService;
 
 /**
@@ -47,7 +48,7 @@ public class HomeController {
 	 * @throws JSONException 
 	 * @throws IOException 
 	 */
-	@RequestMapping(value = "main", method = RequestMethod.GET)
+	@RequestMapping(value = "/main", method = RequestMethod.GET)
 	public ModelAndView home(Locale locale, Model model) throws IOException, JSONException {
 		
 		ModelAndView mv = new ModelAndView();
@@ -67,7 +68,7 @@ public class HomeController {
 	/**
 	 * Simply selects the home view to render by returning its name.
 	 */
-	@RequestMapping(value = "torrent", method = RequestMethod.GET)
+	@RequestMapping(value = "/torrent", method = RequestMethod.GET)
 	public String torrent(Model model,@RequestParam HashMap<String, Object> data) {
 		
 		// 예능, 다큐 주소
@@ -155,7 +156,7 @@ public class HomeController {
 		return "main";
 	}
 	
-	@RequestMapping(value = "torrentState", method = RequestMethod.GET)
+	@RequestMapping(value = "/torrentState", method = RequestMethod.GET)
 	public String torrentState(Model model,@RequestParam HashMap<String, Object> data) throws IOException, JSONException  {
 
 		URL url = new URL("http://memorandum.tk:9091/transmission/rpc/");
@@ -172,46 +173,43 @@ public class HomeController {
 		return "main";
 	}
 	
-	@RequestMapping(value = "torrentSearch", method = RequestMethod.GET)
+	@RequestMapping(value = "/torrentSearch", method = RequestMethod.GET)
 	public String torrentSearch(Model model,@RequestParam HashMap<String, Object> data) throws IOException, JSONException  {
 	
+		// COMM CODE PRGRAM TYPE ADD
+		
 		String name = (String) data.get("search");
-		
-		
-		
+
 		/*
-		URL url = new URL("http://memorandum.tk:9091/transmission/rpc/");
+		 * 1. 사용 가능 사이트 목록 가져오기
+		 * 2. 해당 사이트에 이름으로 검색 ( 0 페이지부터 )
+		 * 3. 찾는 것이 있으면 break , torrent add, log insert
+		 * 4. 없으면 alert
+		 * 5. 
+		 * */
+		List<HashMap<String, Object>> site_list = homeService.getSiteList();
 		
-		TransmissionClient tc = new TransmissionClient(url);
-		
-		List<TorrentStatus> list = tc.getAllTorrents();
 		
 		
-		for (TorrentStatus item : list) {
-			System.out.println(item.getName());
+		for (HashMap<String, Object> site : site_list) {
+			webScrollingSearch(name, (String) site.get("URL"));
 		}
-	*/	
+		
 		return "main";
 	}
 	
-	
-	public void webScrollingSearch(String name) {
-		
-		// 해당 이름으로 DB 검색하여 type 찾아오기
-		
-		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("name", name);
-		
-		HashMap<String, Object> type = homeService.getSearchType(param);
-		
-		webScrollingSearch(name, (String) type.get("TYPE"));
+	public void webScrollingSearch(String name, String url) {
+
+		if (url.contains("torrentboza")) {
+			torrentboza(name, url);
+		}
+		else if (url.contains("torrentmap")) {
+			torrentmap.down(name, url);
+		}
 	}
 	
-	public void webScrollingSearch(String name, String type) {
-		
-		// 예능, 다큐 주소
-	//	String[] URLList = {"https://torrentboza.com/bbs/board.php?bo_table=ent&page=","https://torrentboza.com/bbs/board.php?bo_table=daq&page=" };
-		String url = "https://torrentboza.com/bbs/board.php?bo_table=ent&page=";
+	
+	private void torrentboza(String name, String url) {
 		
 		// 예능으로 접속 
 		Connection conn = Jsoup.connect(url).header("User-Agent", "Mozilla/5.0");
@@ -226,10 +224,6 @@ public class HomeController {
 			// 마지막 페이지 숫자로 구함
 			int LastPage = Integer.parseInt(tmpPage.substring(tmpPage.indexOf("page=")+5, tmpPage.indexOf("\"><i")));
 
-			// 검색할 것들 종류
-	//		List<String> searchList = dao.getSearchList();
-			
-			
 			// 페이지별로 해당 리스트를 가져온다.
 			for (int i = 1 ; i < LastPage ; i ++) {
 				
@@ -241,24 +235,18 @@ public class HomeController {
 				for (Element tmpitem : tmpItemList) {
 					
 					// 글들의 제목중, 찾고 있는 제목만 추린다.
-					Pattern infoPattern = Pattern.compile(".*문제적 남자.*720.*");
+					Pattern infoPattern = Pattern.compile(".*"+name+".*720.*");
 					Matcher infoMatcher = infoPattern.matcher(tmpitem.text());
 					
 					// 찾고있는 녀석이면
 					if (infoMatcher.find()) {
 						
-						System.out.println(tmpitem.text()); // 제목
-
 						String[] tmpName = tmpitem.text().split("\\.");
 						
 						String ep = tmpName[1];
 						String date = tmpName[2];
 						
-						System.out.println(ep);
-						System.out.println(date);
-						
 						// 이름을 이름.EXXX.YYMMDD 으로 변경, DB저장
-						
 						String FileName = tmpitem.text();
 		
 						Connection tmpConn = Jsoup.connect(tmpitem.attr("href")).header("User-Agent", "Mozilla/5.0");
@@ -266,10 +254,14 @@ public class HomeController {
 						
 						ArrayList<Element> torrentUrl = tmpDoc.select("div.list-group a.list-group-item");
 						
+						
+						
 						// 0번 토렌트 파일, 1번 마그넷 주소
 						Element tmpTorrent = (Element) torrentUrl.get(0);
 						
-						// 해당 파일을 Watch폴더에 다운받는다.
+						// 마그넷 주소가 있으면 마그넷으로 바로 토렌트로 추가
+						
+						// 마그넷 주소가 없으면 해당 파일을 Watch폴더에 다운받는다.
 						byte[] bytes = Jsoup.connect(tmpTorrent.attr("href")).ignoreContentType(true).execute().bodyAsBytes();
 						ByteBuffer buffer = ByteBuffer.wrap(bytes);
 						 
@@ -294,6 +286,7 @@ public class HomeController {
 		
 	}
 	
+	@SuppressWarnings("static-access")
 	public static ModelAndView TorrentCheck() {
 
 		ModelAndView mv = new ModelAndView("main");
@@ -303,7 +296,7 @@ public class HomeController {
 			int all = 0;
 			
 			
-			URL url = new URL("http://memorandum.tk:9091/transmission/rpc/");
+			URL url = new URL("http://175.193.19.231:9091/transmission/rpc/");
 	
 			TransmissionClient tc = new TransmissionClient(url);
 			

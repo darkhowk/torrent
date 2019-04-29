@@ -7,6 +7,8 @@ public interface HomeService {
 
 	List<HashMap<String, Object>> getMenuList();
 
-	HashMap<String, Object> getSearchType(HashMap<String, Object> praram);
+/*	HashMap<String, Object> getSearchType(HashMap<String, Object> praram);*/
+
+	List<HashMap<String, Object>> getSiteList();
 
 }

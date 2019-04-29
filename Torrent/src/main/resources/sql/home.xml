@@ -7,19 +7,26 @@
 		SELECT
 			*
 		FROM
-			DARKHOWK.WISHLIST
+			TORRENT.MENU_LIST
 	</select>
 	
-	<select id ="getSearchType" parameterType="HashMap" resultType="java.util.HashMap">
+	<select id="getSiteList" parameterType="HashMap" resultType="java.util.LinkedHashMap">
 		SELECT
 			*
 		FROM
-			DARKHOWK.PROGRAM
+			TORRENT.SITE_LIST
+	</select>
+	
+	<!-- <select id ="getSearchType" parameterType="HashMap" resultType="java.util.HashMap">
+		SELECT
+			*
+		FROM
+			TORRENT.PROGRAM
 		WHERE 1=1
 			<if test="name != null">
 				AND NAME = ${name}
 			</if>
 	
-	</select>
+	</select> -->
 	
 </mapper>

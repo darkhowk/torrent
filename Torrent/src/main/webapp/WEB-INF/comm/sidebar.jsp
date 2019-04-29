@@ -6,7 +6,7 @@
 		<div class="sidebar-brand-icon rotate-n-15">
 			<i class="fas fa-laugh-wink"></i>
 		</div>
-		<div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+		<div class="sidebar-brand-text mx-3">MEMORANDUM</div>
 	</a>
 	
 	<!-- Divider -->
@@ -99,6 +99,21 @@
   <a class="nav-link" href="tables.html">
     <i class="fas fa-fw fa-table"></i>
     <span>Tables</span></a>
+</li>
+
+<!-- Divider -->
+<hr class="sidebar-divider">
+
+<!-- Heading -->
+<div class="sidebar-heading">
+	관리자
+</div>
+
+<!-- Nav Item - Tables -->
+<li class="nav-item">
+  <a class="nav-link" href="/admin/comm_code.do">
+    <i class="fas fa-fw fa-table"></i>
+    <span>공통코드</span></a>
 </li>
 
 <!-- Divider -->

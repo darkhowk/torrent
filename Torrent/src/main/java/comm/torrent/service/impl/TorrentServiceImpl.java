@@ -16,4 +16,10 @@ public class TorrentServiceImpl implements TorrentService{
 		return dao.getUrl();
 	}
 
+
+	@Override
+	public void torrentLogInsert(HashMap<String, Object> data) {
+		dao.torrentLogInsert(data);
+	}
+
 }

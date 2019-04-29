@@ -13,4 +13,8 @@ public class TorrentDao {
 		return session.selectList("TORRENT.getUrl");
 	}
 
+	public void torrentLogInsert(HashMap<String, Object> data) {
+		session.insert("TORRENT.logInsert", data);
+	}
+
 }
