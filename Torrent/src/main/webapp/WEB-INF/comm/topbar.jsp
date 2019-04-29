@@ -1,3 +1,4 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <!-- Topbar -->
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
@@ -204,6 +205,14 @@ $("#torrent_search_text").keydown(function(event) {
 			datatype : "JSON",
 			success : function(obj) {
 				console.log(obj);
+				if (obj.result == "wait"){
+					alert("이미 진행중인 목록이 있습니다.");
+					return false;
+				}
+				else if (obj.result =="start"){
+					alert("해당 검색어로 검색을 시작합니다.");
+					return true;
+				}
 			},
 			error : function(xhr, status, error) {
 				alert("ERROR!!!");

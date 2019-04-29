@@ -38,7 +38,7 @@
 			(
 				  TORRENT_THREAD_SEQ.NEXTVAL
 				, 'Y'
-				, ${NAME }
+				, #{NAME }
 				, SYSDATE
 			)
 	</insert>
@@ -51,6 +51,6 @@
 				, DATE = SYSDATE
 		WHERE 1=1
 		AND STAT = 'Y'
-		AND NAME = ${NAME }
+		AND NAME = #{NAME }
 	</update>	
 </mapper>

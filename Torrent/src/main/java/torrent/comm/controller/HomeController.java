@@ -1,6 +1,7 @@
 package torrent.comm.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -66,7 +67,9 @@ public class HomeController {
 		String name = (String) data.get("search");
 
 		// DB 기록 확인후 시작
-		if (Integer.parseInt((String) homeService.checkThread().get("COUNT")) > 0) {
+		int count = ((BigDecimal) ((Object) homeService.checkThread().get("COUNT"))).intValue();
+		
+		if (count <= 0) {
 			Thread thread = new SearchThread(name);
 			thread.start();
 			result.put("result", "start");
