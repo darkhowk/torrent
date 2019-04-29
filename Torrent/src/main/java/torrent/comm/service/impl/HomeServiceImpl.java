@@ -20,15 +20,25 @@ public class HomeServiceImpl implements HomeService{
 	public List<HashMap<String, Object>> getMenuList() {
 		return homeDao.getMenuList();
 	}
-/*
-	@Override
-	public HashMap<String, Object> getSearchType(HashMap<String, Object> param) {
-		return homeDao.getSearchType(param);
-	}*/
 
 	@Override
 	public List<HashMap<String, Object>> getSiteList() {
 		return homeDao.getSIteList();
+	}
+
+	@Override
+	public HashMap<String, Object> checkThread() {
+		return homeDao.checkThread();
+	}
+
+	@Override
+	public void insertThread(HashMap<String, Object> data) {
+		 homeDao.insertThread(data);		
+	}
+
+	@Override
+	public void updateThread(HashMap<String, Object> data) {
+		 homeDao.updateThread(data);		
 	}
 	
 	

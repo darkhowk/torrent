@@ -14,4 +14,19 @@
 		WHERE 1=1 
 			AND A.USE_YN = 'Y'
 	</select>
+	<insert id="logInsert" parameterType="HashMap" >
+		INSERT INTO
+			TORRENT_LOG
+			VALUES
+			(
+				  TORRENT_LOG_SEQ
+				, ${NAME }
+				, ${EP }
+				, ${SITE }
+				, ${ID }
+				, ${STATE }
+				, SYSDATE
+			)
+	
+	</insert>
 </mapper>

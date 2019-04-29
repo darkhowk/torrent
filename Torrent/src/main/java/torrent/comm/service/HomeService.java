@@ -11,4 +11,10 @@ public interface HomeService {
 
 	List<HashMap<String, Object>> getSiteList();
 
+	HashMap<String, Object> checkThread();
+
+	void insertThread(HashMap<String, Object> data);
+
+	void updateThread(HashMap<String, Object> data);
+
 }

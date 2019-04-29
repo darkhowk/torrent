@@ -52,20 +52,27 @@ public class torrent_comm {
 		return list_find_name();
 	}
 	
-	public static void downList(String urlName, ArrayList<HashMap<String, Object>> contentList ) {
+	public static Boolean downList(String urlName, ArrayList<HashMap<String, Object>> contentList ) {
+		
+		Boolean result = false;
 		
 		switch(urlName) {
 		
 			case "torrentmap" :
-				torrentmap_downList(contentList);
+				result = torrentmap_downList(contentList);
 				break;
 			case "torrentboza" :
-				torrentboza_downList(contentList);
+				result = torrentboza_downList(contentList);
 				break;
 			default:
+				result = false;
 		}
+		
+		return result;
 	}
-	private static void torrentboza_downList(ArrayList<HashMap<String, Object>> contentList ) {
+	private static Boolean torrentboza_downList(ArrayList<HashMap<String, Object>> contentList ) {
+		
+		Boolean result = false;
 		
 		for (HashMap<String, Object> content : contentList) {
 			
@@ -74,7 +81,7 @@ public class torrent_comm {
 			String url = (String) content.get("url");
 			String title = (String) content.get("title");
 			String ep = (String) content.get("ep");
-			
+			String wr_id = "";
 			System.out.println(url);
 			System.out.println(title);
 			System.out.println(ep);
@@ -93,7 +100,7 @@ public class torrent_comm {
 				magnet = tmpMagnet.substring(tmpMagnet.indexOf("magnet:?"), tmpMagnet.length());
 
 				String file = doc.select(".view_file_download").attr("href");
-				String wr_id = file.substring(file.indexOf("wr_id=")+6, file.indexOf("&page="));
+				wr_id = file.substring(file.indexOf("wr_id=")+6, file.indexOf("&page="));
 				String page = file.substring(file.indexOf("&page=")+6);
 				
 				if (magnet.equals("")) {
@@ -125,11 +132,24 @@ public class torrent_comm {
 			if (db) {
 				
 				HashMap<String, Object> data = new HashMap<String, Object>();
+				
+				data.put("NAME", title);
+				data.put("EP", ep);
+				data.put("SITE", "torrentboza");
+				data.put("ID", wr_id);
+				data.put("STATE", "DOWN");
+				
 				service.torrentLogInsert(data);
+				
+				result = true;
 			}
+			
 		}
+		return result;
 	}
-	private static void torrentmap_downList(ArrayList<HashMap<String, Object>> contentList ) {
+	private static Boolean torrentmap_downList(ArrayList<HashMap<String, Object>> contentList ) {
+		
+		Boolean result = false;
 		
 		for (HashMap<String, Object> content : contentList) {
 			
@@ -185,10 +205,19 @@ public class torrent_comm {
 			if (db) {
 				
 				HashMap<String, Object> data = new HashMap<String, Object>();
-				service.torrentLogInsert(data);
 				
+				data.put("NAME", title);
+				data.put("EP", ep);
+				data.put("SITE", "torrentmap");
+				data.put("ID", wr_id);
+				data.put("STATE", "DOWN");
+				
+				service.torrentLogInsert(data);
+				result = true;
 			}
 		}
+		
+		return result;
 		
 	}
 	

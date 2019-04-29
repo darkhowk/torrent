@@ -1,32 +1,23 @@
 package torrent.comm.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
 import org.json.JSONException;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import ca.benow.transmission.TransmissionClient;
@@ -67,45 +58,69 @@ public class HomeController {
 		return mv;
 	}
 	
-	@RequestMapping(value = "/torrentState", method = RequestMethod.GET)
-	public String torrentState(Model model,@RequestParam HashMap<String, Object> data) throws IOException, JSONException  {
-
-		URL url = new URL("http://175.193.19.231:9091/transmission/rpc/");
-
-		TransmissionClient tc = new TransmissionClient(url);
-		
-		List<TorrentStatus> list = tc.getAllTorrents();
-		
-		
-		for (TorrentStatus item : list) {
-			System.out.println(item.getName());
-		}
-		
-		return "main";
-	}
-	
-	@RequestMapping(value = "/torrentSearch", method = RequestMethod.GET)
-	public String torrentSearch(Model model,@RequestParam HashMap<String, Object> data) throws IOException, JSONException  {
-	
+	@RequestMapping(value = "/torrentSearch", method = {RequestMethod.GET, RequestMethod.POST} ,  produces = "application/json")
+	@ResponseBody 
+	public HashMap<String, Object> torrentSearch(Model model,@RequestParam HashMap<String, Object> data) throws IOException, JSONException  {
+		HashMap<String, Object>  result = new HashMap<String, Object> ();
 		// COMM CODE PRGRAM TYPE ADD
-		
 		String name = (String) data.get("search");
 
-		for (HashMap<String, Object> site : homeService.getSiteList()) {
-			webScrollingSearch(name, (String) site.get("URL"));
+		// DB 기록 확인후 시작
+		if (Integer.parseInt((String) homeService.checkThread().get("COUNT")) > 0) {
+			Thread thread = new SearchThread(name);
+			thread.start();
+			result.put("result", "start");
 		}
-		
-		return "main";
+		else {
+			result.put("result", "wait");
+			
+		}
+		return result;
 	}
 	
-	public void webScrollingSearch(String name, String url) {
+	class SearchThread extends Thread{
+		
+		String name ;
+		
+		SearchThread(String name){
+			this.name = name;
+		}
+		
+		public void run() {
+			try {
+				// DB에 시작 기록
+				HashMap<String, Object> data = new HashMap<String, Object>();
+				
+				data.put("NAME", name);
+				homeService.insertThread(data);
+				for (HashMap<String, Object> site : homeService.getSiteList()) {
+					
+					if (webScrollingSearch(name, (String) site.get("URL"))) {
+						break;
+					}
+				}
+				
+				// DB 업데이트
+				homeService.updateThread(data);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	public Boolean webScrollingSearch(String name, String url) {
 
+		Boolean result = false;
+		
 		if (url.contains("torrentboza")) {
-			torrentboza.down(name, url);
+			result = torrentboza.down(name, url);
 		}
 		else if (url.contains("torrentmap")) {
-			torrentmap.down(name, url);
+			result = torrentmap.down(name, url);
 		}
+		
+		return result;
 	}
 	
 	@SuppressWarnings("static-access")

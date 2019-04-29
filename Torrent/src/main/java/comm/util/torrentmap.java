@@ -10,7 +10,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class torrentmap {
-	public static void down(String title, String url) {
+	public static Boolean down(String title, String url) {
+		
+		Boolean result = false;
 		
 		String urlName = "torrentmap";
 		//String url = "https://www.torrentmap.com/bbs/board.php?bo_table="+type+"&page=";
@@ -62,11 +64,13 @@ public class torrentmap {
 				
 			}// for end
 
-			torrent_comm.downList(urlName, contentList);
+			result = torrent_comm.downList(urlName, contentList);
 			
 		} 
 		catch (Exception e1) {
 			e1.printStackTrace();
 		}
+		
+		return result;
 	}
 }

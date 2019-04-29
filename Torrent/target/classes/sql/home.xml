@@ -11,22 +11,46 @@
 	</select>
 	
 	<select id="getSiteList" parameterType="HashMap" resultType="java.util.LinkedHashMap">
-		SELECT
-			*
-		FROM
-			TORRENT.SITE_LIST
+		SELECT 
+			A.URL || B.CATEGORY AS URL 
+		FROM 
+			URL A 
+				LEFT JOIN 
+			URL_DETAIL B 
+				ON A.SEQ = B.URL_SEQ        
+		WHERE 1=1
+	        AND A.USE_YN = 'Y'
 	</select>
 	
-	<!-- <select id ="getSearchType" parameterType="HashMap" resultType="java.util.HashMap">
-		SELECT
-			*
-		FROM
-			TORRENT.PROGRAM
+	<select id="checkThread" parameterType="HashMap" resultType="java.util.LinkedHashMap">
+		SELECT 
+			COUNT(*) AS COUNT 
+		FROM 
+			TORRENT_THREAD
 		WHERE 1=1
-			<if test="name != null">
-				AND NAME = ${name}
-			</if>
+	        AND STAT = 'Y'
+	</select>
 	
-	</select> -->
+	<insert id="insertThread" parameterType="HashMap" >
+		INSERT INTO
+			TORRENT.TORRENT_THREAD
+			VALUES
+			(
+				  TORRENT_THREAD_SEQ.NEXTVAL
+				, 'Y'
+				, ${NAME }
+				, SYSDATE
+			)
+	</insert>
 	
+	<update id="updateThread" parameterType="HashMap" >
+		UPDATE
+			TORRENT.TORRENT_THREAD
+			SET
+				  STAT = 'N'
+				, DATE = SYSDATE
+		WHERE 1=1
+		AND STAT = 'Y'
+		AND NAME = ${NAME }
+	</update>	
 </mapper>

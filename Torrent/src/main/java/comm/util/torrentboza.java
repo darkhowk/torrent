@@ -10,7 +10,10 @@ import org.jsoup.nodes.Element;
 
 public class torrentboza {
 
-	public static void down(String title, String url) {
+	public static Boolean down(String title, String url) {
+		
+		Boolean result = false;
+		
 		String urlName = "torrentboza";
 		
 		Connection conn = Jsoup.connect(url).header("User-Agent", "Mozilla/5.0");
@@ -54,12 +57,13 @@ public class torrentboza {
 			} // for end
 			
 			System.out.println("down start");
-			torrent_comm.downList(urlName, contentList);
+			result = torrent_comm.downList(urlName, contentList);
 			
 		} 
 		catch (Exception e1) {
 			e1.printStackTrace();
 		}
 
+		return result;
 	}
 }
