@@ -59,15 +59,77 @@ public class torrent_comm {
 			case "torrentmap" :
 				torrentmap_downList(contentList);
 				break;
-			
+			case "torrentboza" :
+				torrentboza_downList(contentList);
+				break;
 			default:
-		
 		}
 	}
-	
-	private static void torrentmap_downList(ArrayList<HashMap<String, Object>> contentList ) {
+	private static void torrentboza_downList(ArrayList<HashMap<String, Object>> contentList ) {
 		
-		CommSession session = null;
+		for (HashMap<String, Object> content : contentList) {
+			
+			Boolean db = true;
+			
+			String url = (String) content.get("url");
+			String title = (String) content.get("title");
+			String ep = (String) content.get("ep");
+			
+			System.out.println(url);
+			System.out.println(title);
+			System.out.println(ep);
+			
+			Connection conn = Jsoup.connect((String) content.get("url")).header("User-Agent", "Mozilla/5.0");
+			
+			Document doc;
+			
+			try {
+				doc = conn.get();
+
+				String magnet = "";
+
+				String tmpMagnet = doc.select(".list-group-item").text();
+				
+				magnet = tmpMagnet.substring(tmpMagnet.indexOf("magnet:?"), tmpMagnet.length());
+
+				String file = doc.select(".view_file_download").attr("href");
+				String wr_id = file.substring(file.indexOf("wr_id=")+6, file.indexOf("&page="));
+				String page = file.substring(file.indexOf("&page=")+6);
+				
+				if (magnet.equals("")) {
+					String file_url = "https://torrentboza.com/bbs/download.php?bo_table=ent&wr_id="+wr_id+"&no=1&page="+page;
+
+					byte[] bytes = Jsoup.connect(file_url).header("User-Agent", "Mozilla/5.0").ignoreContentType(true).execute().bodyAsBytes();
+					ByteBuffer buffer = ByteBuffer.wrap(bytes);
+					
+					File tmpFile = new File("C:/DATA/Watch/"+title+ep+".torrent");
+					
+					db = tmpFile.createNewFile();
+					
+					FileOutputStream fis = new FileOutputStream(tmpFile);
+					FileChannel cin = fis.getChannel();
+					cin.write(buffer);
+					cin.close();
+					fis.close();
+				}
+				else {
+					db = magnet_add(magnet);
+				}
+				
+			}
+			catch (Exception e1) {
+				e1.printStackTrace();
+				db = false;
+			}
+			
+			if (db) {
+				
+				HashMap<String, Object> data = new HashMap<String, Object>();
+				service.torrentLogInsert(data);
+			}
+		}
+	}
+	private static void torrentmap_downList(ArrayList<HashMap<String, Object>> contentList ) {
 		
 		for (HashMap<String, Object> content : contentList) {
 			
@@ -123,7 +185,6 @@ public class torrent_comm {
 			if (db) {
 				
 				HashMap<String, Object> data = new HashMap<String, Object>();
-				
 				service.torrentLogInsert(data);
 				
 			}
