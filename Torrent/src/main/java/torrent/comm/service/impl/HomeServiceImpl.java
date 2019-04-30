@@ -128,7 +128,6 @@ public class HomeServiceImpl implements HomeService{
 						db = torrent_comm.magnet_add(magnet);
 					}
 					
-					
 					db = true;
 					if (db) {
 						
