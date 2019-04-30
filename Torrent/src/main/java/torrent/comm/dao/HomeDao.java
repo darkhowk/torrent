@@ -11,9 +11,8 @@ import org.springframework.stereotype.Repository;
 public class HomeDao {
 	
 	@Autowired
-	 protected SqlSessionTemplate session;
+	SqlSessionTemplate session;
 
-	
     public List<HashMap<String, Object>> getMenuList() {
 		return session.selectList("HOME.getMenuList");
 	}
@@ -36,5 +35,13 @@ public class HomeDao {
 
 	public void updateThread(HashMap<String, Object> data) {
 		session.update("HOME.updateThread", data);
+	}
+
+	public void torrentLogInsert(HashMap<String, Object> data) {
+		session.insert("TORRENT.logInsert", data);
+	}
+
+	public String check_ep(HashMap<String, Object> data) {
+		return session.selectOne("TORRENT.check_ep", data);
 	}
 }

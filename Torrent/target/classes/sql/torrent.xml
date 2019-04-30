@@ -14,19 +14,29 @@
 		WHERE 1=1 
 			AND A.USE_YN = 'Y'
 	</select>
+	<select id="check_ep" parameterType="HashMap" resultType="String">
+		SELECT 
+			COUNT(*)
+		FROM
+			TORRENT.TORRENT_LOG
+		WHERE 1=1
+			AND NAME = #{NAME }
+			AND EP = #{EP }
+	</select>
 	<insert id="logInsert" parameterType="HashMap" >
 		INSERT INTO
-			TORRENT_LOG
+			TORRENT.TORRENT_LOG
 			VALUES
 			(
-				  TORRENT_LOG_SEQ
-				, ${NAME }
-				, ${EP }
-				, ${SITE }
-				, ${ID }
-				, ${STATE }
+				  TORRENT_LOG_SEQ.NEXTVAL
+				, #{NAME }
+				, #{EP }
+				, #{SITE }
+				, #{ID }
+				, #{STATE }
 				, SYSDATE
 			)
 	
 	</insert>
+	
 </mapper>

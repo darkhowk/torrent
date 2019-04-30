@@ -23,8 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ca.benow.transmission.TransmissionClient;
 import ca.benow.transmission.model.TorrentStatus;
-import comm.util.torrentboza;
-import comm.util.torrentmap;
 import torrent.comm.service.HomeService;
 
 /**
@@ -71,6 +69,7 @@ public class HomeController {
 		
 		if (count <= 0) {
 			Thread thread = new SearchThread(name);
+			
 			thread.start();
 			result.put("result", "start");
 		}
@@ -80,7 +79,7 @@ public class HomeController {
 		}
 		return result;
 	}
-	
+
 	class SearchThread extends Thread{
 		
 		String name ;
@@ -97,12 +96,10 @@ public class HomeController {
 				data.put("NAME", name);
 				homeService.insertThread(data);
 				for (HashMap<String, Object> site : homeService.getSiteList()) {
-					
-					if (webScrollingSearch(name, (String) site.get("URL"))) {
-						break;
-					}
+					System.out.println("SITE URL :: "+(String) site.get("URL"));
+					webScrollingSearch(name, (String) site.get("URL"));
 				}
-				
+
 				// DB 업데이트
 				homeService.updateThread(data);
 			} catch(Exception e) {
@@ -116,11 +113,13 @@ public class HomeController {
 
 		Boolean result = false;
 		
+		System.out.println("scrolling start :: " + url);
+		
 		if (url.contains("torrentboza")) {
-			result = torrentboza.down(name, url);
+			result = homeService.torrentbozadown(name, url);
 		}
 		else if (url.contains("torrentmap")) {
-			result = torrentmap.down(name, url);
+			result = homeService.torrentmapdown(name, url);
 		}
 		
 		return result;
@@ -147,6 +146,8 @@ public class HomeController {
 			for(TorrentStatus item : list) {
 				HashMap<String, Object> map = new HashMap<String, Object>();
 				map.put("NAME", item.getName());
+				
+				
 				// item.STATUS_CHECK_WAIT == 1
 				// item.STATUS_CHECKING == 2
 				// item.STATUS_DOWNLOADING == 4	
@@ -160,8 +161,8 @@ public class HomeController {
 				if (item.getStatus() == item.STATUS_CHECK_WAIT) {
 					state = "STATUS_CHECK_WAIT";
 				}
-				if (item.getStatus() == item.STATUS_CHECK_WAIT) {
-					state = "STATUS_CHECK_WAIT";
+				if (item.getStatus() == item.STATUS_CHECKING) {
+					state = "STATUS_CHECKING";
 				}
 				if (item.getStatus() == item.STATUS_DOWNLOADING) {
 					state = "STATUS_DOWNLOADING";
@@ -192,5 +193,6 @@ public class HomeController {
 		}
 		return mv;
 	}
+	
 	
 }

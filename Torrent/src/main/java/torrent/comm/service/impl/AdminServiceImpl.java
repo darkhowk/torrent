@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import torrent.comm.dao.AdminDao;
 import torrent.comm.service.AdminService;
 
-@Service( value="adminService")
+@Service(value="adminService")
 public class AdminServiceImpl implements AdminService{
 
 	@Resource(name="adminDao")

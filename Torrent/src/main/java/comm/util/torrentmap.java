@@ -10,11 +10,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class torrentmap {
-	public static Boolean down(String title, String url) {
+	
+	public static ArrayList<HashMap<String, Object>> down(String title, String url) {
 		
-		Boolean result = false;
-		
-		String urlName = "torrentmap";
 		//String url = "https://www.torrentmap.com/bbs/board.php?bo_table="+type+"&page=";
 		
 		Connection conn = Jsoup.connect(url).header("User-Agent", "Mozilla/5.0");
@@ -64,13 +62,12 @@ public class torrentmap {
 				
 			}// for end
 
-			result = torrent_comm.downList(urlName, contentList);
-			
 		} 
 		catch (Exception e1) {
 			e1.printStackTrace();
 		}
 		
-		return result;
+		return contentList;
 	}
+	
 }

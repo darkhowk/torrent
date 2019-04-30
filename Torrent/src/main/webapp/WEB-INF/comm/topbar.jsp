@@ -186,9 +186,31 @@
 
 </nav>
 <!-- End of Topbar -->
+<div id = "Progress_Loading"><!-- 로딩바 -->
+<img src="/img/Progress_Loading.gif"/>
+</div>
+
+<style type = "text/css"> <!-- 로딩바스타일 -->
+body
+{
+ text-align: center;
+ margin: 0 auto;
+}
+#Progress_Loading
+{
+ position: absolute;
+ left: 50%;
+ top: 50%;
+ background: #ffffff;
+}
+</style>
 
 <script type="text/javascript" >
-	
+
+$(document).ready(function(){
+	   $('#Progress_Loading').hide(); //첫 시작시 로딩바를 숨겨준다.
+});
+
 $("#torrent_search_text").keydown(function(event) {
 	 if (event.keyCode == 13){
 		torrent_search();		 
@@ -196,6 +218,8 @@ $("#torrent_search_text").keydown(function(event) {
 });
 	
 	function torrent_search(){
+		$('#Progress_Loading').show(); //ajax실행시 로딩바를 보여준다.
+		
 		jQuery.ajax({
 			type : "POST",
 			url : "/torrentSearch.do",
@@ -213,6 +237,9 @@ $("#torrent_search_text").keydown(function(event) {
 					alert("해당 검색어로 검색을 시작합니다.");
 					return true;
 				}
+			},
+			complete : function(){
+				$('#Progress_Loading').hide(); //ajax종료시 로딩바를 숨겨준다.
 			},
 			error : function(xhr, status, error) {
 				alert("ERROR!!!");

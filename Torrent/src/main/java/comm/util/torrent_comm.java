@@ -1,33 +1,22 @@
 package comm.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import ca.benow.transmission.TransmissionClient;
-import comm.torrent.service.TorrentService;
 
 public class torrent_comm {
 
-	private static ArrayList<Element> tmpList;
-	private static String name;
-	private static String view;
-	private static String rill;
+	private static  ArrayList<Element> tmpList;
+	private static  String name;
+	private static  String view;
+	private static  String rill;
 
-	private static TorrentService service;
-	
-	public static ArrayList<Element> list_find_name(ArrayList<Element> tmpList, String name) {
+	public static  ArrayList<Element> list_find_name(ArrayList<Element> tmpList, String name) {
 			setTmpList(tmpList);
 			setName(name);
 			setView("");
@@ -35,7 +24,7 @@ public class torrent_comm {
 			return list_find_name();
 	}
 	
-	public static ArrayList<Element> list_find_name(ArrayList<Element> tmpList, String name, String view) {
+	public ArrayList<Element> list_find_name(ArrayList<Element> tmpList, String name, String view) {
 			setTmpList(tmpList);
 			setName(name);
 			setView(view);
@@ -44,7 +33,7 @@ public class torrent_comm {
 	}
 	
 	
-	public static ArrayList<Element> list_find_name(ArrayList<Element> tmpList, String name, String view, String rill) {
+	public ArrayList<Element> list_find_name(ArrayList<Element> tmpList, String name, String view, String rill) {
 		setTmpList(tmpList);
 		setName(name);
 		setView(view);
@@ -52,176 +41,7 @@ public class torrent_comm {
 		return list_find_name();
 	}
 	
-	public static Boolean downList(String urlName, ArrayList<HashMap<String, Object>> contentList ) {
-		
-		Boolean result = false;
-		
-		switch(urlName) {
-		
-			case "torrentmap" :
-				result = torrentmap_downList(contentList);
-				break;
-			case "torrentboza" :
-				result = torrentboza_downList(contentList);
-				break;
-			default:
-				result = false;
-		}
-		
-		return result;
-	}
-	private static Boolean torrentboza_downList(ArrayList<HashMap<String, Object>> contentList ) {
-		
-		Boolean result = false;
-		
-		for (HashMap<String, Object> content : contentList) {
-			
-			Boolean db = true;
-			
-			String url = (String) content.get("url");
-			String title = (String) content.get("title");
-			String ep = (String) content.get("ep");
-			String wr_id = "";
-			System.out.println(url);
-			System.out.println(title);
-			System.out.println(ep);
-			
-			Connection conn = Jsoup.connect((String) content.get("url")).header("User-Agent", "Mozilla/5.0");
-			
-			Document doc;
-			
-			try {
-				doc = conn.get();
-
-				String magnet = "";
-
-				String tmpMagnet = doc.select(".list-group-item").text();
-				
-				magnet = tmpMagnet.substring(tmpMagnet.indexOf("magnet:?"), tmpMagnet.length());
-
-				String file = doc.select(".view_file_download").attr("href");
-				wr_id = file.substring(file.indexOf("wr_id=")+6, file.indexOf("&page="));
-				String page = file.substring(file.indexOf("&page=")+6);
-				
-				if (magnet.equals("")) {
-					String file_url = "https://torrentboza.com/bbs/download.php?bo_table=ent&wr_id="+wr_id+"&no=1&page="+page;
-
-					byte[] bytes = Jsoup.connect(file_url).header("User-Agent", "Mozilla/5.0").ignoreContentType(true).execute().bodyAsBytes();
-					ByteBuffer buffer = ByteBuffer.wrap(bytes);
-					
-					File tmpFile = new File("C:/DATA/Watch/"+title+ep+".torrent");
-					
-					db = tmpFile.createNewFile();
-					
-					FileOutputStream fis = new FileOutputStream(tmpFile);
-					FileChannel cin = fis.getChannel();
-					cin.write(buffer);
-					cin.close();
-					fis.close();
-				}
-				else {
-					db = magnet_add(magnet);
-				}
-				
-			}
-			catch (Exception e1) {
-				e1.printStackTrace();
-				db = false;
-			}
-			
-			if (db) {
-				
-				HashMap<String, Object> data = new HashMap<String, Object>();
-				
-				data.put("NAME", title);
-				data.put("EP", ep);
-				data.put("SITE", "torrentboza");
-				data.put("ID", wr_id);
-				data.put("STATE", "DOWN");
-				
-				service.torrentLogInsert(data);
-				
-				result = true;
-			}
-			
-		}
-		return result;
-	}
-	private static Boolean torrentmap_downList(ArrayList<HashMap<String, Object>> contentList ) {
-		
-		Boolean result = false;
-		
-		for (HashMap<String, Object> content : contentList) {
-			
-			Boolean db = true;
-			
-			String url = (String) content.get("url");
-			String title = (String) content.get("title");
-			String ep = (String) content.get("ep");
-			
-			String wr_id = url.substring(url.indexOf("wr_id=")+6, url.indexOf("&page="));
-			
-			Connection conn = Jsoup.connect((String) content.get("url")).header("User-Agent", "Mozilla/5.0");
-			
-			Document doc;
-			
-			try {
-				doc = conn.get();
-				
-				String magnet = "";
-				for (Element el : doc.select("a")) {
-					if (el.text().equals("마그넷주소")) {
-						magnet = el.attr("href");
-					}
-				}
-				
-				magnet = "";
-				if (magnet.equals("")) {
-					String file_url = "https://www.torrentmap.com/skin/board/torrent/get_filetender2.php?bo_table=kr_ent&wr_id="+wr_id+"&bf_no=0";
-					
-					byte[] bytes = Jsoup.connect(file_url).ignoreContentType(true).execute().bodyAsBytes();
-					ByteBuffer buffer = ByteBuffer.wrap(bytes);
-					
-					File tmpFile = new File("C:/DATA/Watch/"+title+ep+".torrent");
-					
-					db = tmpFile.createNewFile();
-					
-					FileOutputStream fis = new FileOutputStream(tmpFile);
-					FileChannel cin = fis.getChannel();
-					cin.write(buffer);
-					cin.close();
-					fis.close();
-					
-				}
-				else {
-					db = magnet_add(url);
-				}
-				
-			}
-			catch (Exception e1) {
-				db = false;
-			}
-			
-			if (db) {
-				
-				HashMap<String, Object> data = new HashMap<String, Object>();
-				
-				data.put("NAME", title);
-				data.put("EP", ep);
-				data.put("SITE", "torrentmap");
-				data.put("ID", wr_id);
-				data.put("STATE", "DOWN");
-				
-				service.torrentLogInsert(data);
-				result = true;
-			}
-		}
-		
-		return result;
-		
-	}
-	
-	private static Boolean magnet_add(String url) {
+	public static  Boolean magnet_add(String url) {
 		try {
 			URL transmission_url = new URL("http://175.193.19.231:9091/transmission/rpc/");
 			TransmissionClient tc = new TransmissionClient(transmission_url);
@@ -235,7 +55,7 @@ public class torrent_comm {
 		
 	}
 	
-	private static ArrayList<Element> list_find_name() {
+	private static  ArrayList<Element> list_find_name() {
 		
 		ArrayList<Element> itemList = new ArrayList<Element>();
 		
@@ -259,7 +79,7 @@ public class torrent_comm {
 		return tmpList;
 	}
 
-	public static void setTmpList(ArrayList<Element> tmpList1) {
+	public static  void setTmpList(ArrayList<Element> tmpList1) {
 		tmpList = tmpList1;
 	}
 
@@ -267,15 +87,15 @@ public class torrent_comm {
 		return name;
 	}
 
-	public static void setName(String name1) {
+	public static  void setName(String name1) {
 		name = name1;
 	}
 
-	public static String getView() {
+	public String getView() {
 		return view;
 	}
 
-	public static void setView(String view1) {
+	public static  void setView(String view1) {
 		view = view1;
 	}
 
@@ -283,8 +103,9 @@ public class torrent_comm {
 		return rill;
 	}
 
-	public static void setRill(String rill1) {
+	public static  void setRill(String rill1) {
 		rill = rill1;
 	}
 	
 }
+

@@ -22,7 +22,6 @@ import torrent.comm.service.AdminService;
 @RequestMapping(value ="/admin", method = {RequestMethod.GET, RequestMethod.POST})
 public class AdminController {
 
-	
 	@Resource(name="adminService")
 	private AdminService adminService;
 	
