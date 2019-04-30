@@ -57,93 +57,107 @@ public class HomeServiceImpl implements HomeService{
 	public Boolean torrentbozadown(String title1, String url1) {
 		Boolean result = false;
 		
-		ArrayList<HashMap<String, Object>> contentList = torrentboza.down(title1, url1);
+		ArrayList<HashMap<String, Object>> resultList =  new ArrayList<HashMap<String, Object>>();
+		
+		ArrayList<HashMap<String, Object>> contentList1 = torrentboza.down(title1, url1);
+		ArrayList<HashMap<String, Object>> contentList2 = torrentboza.down(title1, url1);
+		
+		for (HashMap<String, Object> content1 : contentList1) {
+			for (HashMap<String,Object> content2 : contentList2) {
+				if (content1.get("ep").equals(content2.get("ep"))) {
+					
+				}
+				else {
+					resultList.add(content1);
+				}
+			}
+		}
+		
+		for (HashMap<String, Object> content : resultList) {
 			
-			for (HashMap<String, Object> content : contentList) {
-				
-				Boolean db = true;
-				
-				String url = (String) content.get("url");
-				String title = (String) content.get("title");
-				String ep = (String) content.get("ep");
-				String wr_id = "";
-				
-				Connection conn = Jsoup.connect(url).header("User-Agent", "Mozilla/5.0");
-				
-				Document doc;
-				
-				try {
-					doc = conn.get();
+			Boolean db = true;
+			
+			String url = (String) content.get("url");
+			String title = (String) content.get("title");
+			String ep = (String) content.get("ep");
+			String wr_id = "";
+			
+			Connection conn = Jsoup.connect(url).header("User-Agent", "Mozilla/5.0");
+			
+			Document doc;
+			
+			try {
+				doc = conn.get();
 
-					String magnet = "";
+				String magnet = "";
 
-					String tmpMagnet = doc.select(".list-group-item").text();
-					
-					magnet = tmpMagnet.substring(tmpMagnet.indexOf("magnet:?"), tmpMagnet.length());
+				String tmpMagnet = doc.select(".list-group-item").text();
+				
+				magnet = tmpMagnet.substring(tmpMagnet.indexOf("magnet:?"), tmpMagnet.length());
 
-					String file = doc.select(".view_file_download").attr("href");
-					
-					wr_id = file.substring(file.indexOf("wr_id=")+6, file.indexOf("&page="));
-					String page = file.substring(file.indexOf("&page=")+6);
-					
-					HashMap<String, Object> ep_data = new HashMap<String, Object>();
-					ep_data.put("TITLE", title);
-					ep_data.put("EP", ep);
-					
-					int check_ep = Integer.parseInt((String) homeDao.check_ep(ep_data));
-					
-					if (check_ep <= 0) {
-						System.out.println("다운 시작 ::" +ep);
-						if (magnet.equals("")) {
-							String file_url = "https://torrentboza.com/bbs/download.php?bo_table=ent&wr_id="+wr_id+"&no=1&page="+page;
-	
-							byte[] bytes = Jsoup.connect(file_url).header("User-Agent", "Mozilla/5.0").ignoreContentType(true).execute().bodyAsBytes();
-							ByteBuffer buffer = ByteBuffer.wrap(bytes);
-							
-							File tmpFile = new File("C:/DATA/Watch/"+title+ep+".torrent");
-							
-							db = tmpFile.createNewFile();
-							
-							FileOutputStream fis = new FileOutputStream(tmpFile);
-							FileChannel cin = fis.getChannel();
-							cin.write(buffer);
-							cin.close();
-							fis.close();
-						}
-						else {
-							db = torrent_comm.magnet_add(magnet);
-						}
+				String file = doc.select(".view_file_download").attr("href");
+				
+				wr_id = file.substring(file.indexOf("wr_id=")+6, file.indexOf("&page="));
+				String page = file.substring(file.indexOf("&page=")+6);
+				
+				HashMap<String, Object> ep_data = new HashMap<String, Object>();
+				ep_data.put("TITLE", title);
+				ep_data.put("EP", ep);
+				
+				int check_ep = Integer.parseInt((String) homeDao.check_ep(ep_data));
+				
+				if (check_ep <= 0) {
+					System.out.println("다운 시작 ::" +ep);
+					if (magnet.equals("")) {
+						String file_url = "https://torrentboza.com/bbs/download.php?bo_table=ent&wr_id="+wr_id+"&no=1&page="+page;
+
+						byte[] bytes = Jsoup.connect(file_url).header("User-Agent", "Mozilla/5.0").ignoreContentType(true).execute().bodyAsBytes();
+						ByteBuffer buffer = ByteBuffer.wrap(bytes);
 						
+						File tmpFile = new File("C:/DATA/Watch/"+title+ep+".torrent");
 						
-						db = true;
-						if (db) {
-							
-							HashMap<String, Object> data = new HashMap<String, Object>();
-							
-							data.put("NAME", title);
-							data.put("EP", ep);
-							data.put("SITE", "torrentboza");
-							data.put("ID", wr_id);
-							data.put("STATE", "DOWN");
-							homeDao.torrentLogInsert(data);
-						}
+						db = tmpFile.createNewFile();
+						
+						FileOutputStream fis = new FileOutputStream(tmpFile);
+						FileChannel cin = fis.getChannel();
+						cin.write(buffer);
+						cin.close();
+						fis.close();
 					}
 					else {
-						System.out.println("이미 다운 시작 :: " +ep);
+						db = torrent_comm.magnet_add(magnet);
 					}
 					
+					
+					db = true;
+					if (db) {
+						
+						HashMap<String, Object> data = new HashMap<String, Object>();
+						
+						data.put("NAME", title);
+						data.put("EP", ep);
+						data.put("SITE", "torrentboza");
+						data.put("ID", wr_id);
+						data.put("STATE", "DOWN");
+						homeDao.torrentLogInsert(data);
+					}
 				}
-				catch (Exception e1) {
-					e1.printStackTrace();
-					db = false;
-					result = false;
+				else {
+					System.out.println("이미 다운 시작 :: " +ep);
 				}
-				result = true;
 				
 			}
-			return result;
+			catch (Exception e1) {
+				e1.printStackTrace();
+				db = false;
+				result = false;
+			}
+			result = true;
+			
 		}
-	
+		return result;
+	}
+
 	@Override
 	public Boolean torrentmapdown(String title1, String url1) {
 		Boolean result = false;
