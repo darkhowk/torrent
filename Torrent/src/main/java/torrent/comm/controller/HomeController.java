@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.annotation.Resource;
 
@@ -64,7 +66,7 @@ public class HomeController {
 		// COMM CODE PRGRAM TYPE ADD
 		String name = (String) data.get("search");
 
-		// DB 기록 확인후 시작
+		// DB 스레드 확인후 시작
 		int count = ((BigDecimal) ((Object) homeService.checkThread().get("COUNT"))).intValue();
 		
 		if (count <= 0) {
@@ -79,7 +81,76 @@ public class HomeController {
 		}
 		return result;
 	}
+	
+	@RequestMapping(value = "/torrentAuto", method = {RequestMethod.GET, RequestMethod.POST} ,  produces = "application/json")
+	@ResponseBody 
+	public HashMap<String, Object> torrentAuto(Model model,@RequestParam HashMap<String, Object> data) throws IOException, JSONException  {
+		HashMap<String, Object>  result = new HashMap<String, Object> ();
+		// COMM CODE PRGRAM TYPE ADD
+		String name = (String) data.get("search");
+		
+		// DB 스레드 확인후 시작
+	//	int count = ((BigDecimal) ((Object) homeService.checkAutoThread().get("COUNT"))).intValue();
+		
+		// DB에서 검색 목록 가져옴. EP 도 가져옴.
+		
+		List<HashMap<String, Object>> searchList = homeService.getMenuList();
+	//	if (count <= 0) {
+			Timer timer = new Timer();
+			TimerTask task = new TimerTask() {
+				
+				@Override
+				public void run() {
+					Thread auto = new AutoThread(searchList);
+					auto.start();
+				}
+			};
+			
+			//timer.schedule(task, 1000, 1000);
+			timer.schedule(task, 1000, 360000);
+		
+	//	}
+	//	else {
+	//		result.put("result", "wait");
+			
+	//	}
+		return result;
+	}
 
+	class AutoThread extends Thread{
+		
+		List<HashMap<String, Object>> searchList;
+		
+		AutoThread(List<HashMap<String, Object>> searchList){
+			this.searchList = searchList;
+		}
+		
+		public void run() {
+			
+			for (HashMap<String, Object> search : searchList) {
+
+				// DB에 시작 기록
+				HashMap<String, Object> data = new HashMap<String, Object>();
+				
+				data.put("NAME", search.get("NAME"));
+				data.put("STAT", "START");
+				homeService.insertThread(data);
+				for (HashMap<String, Object> site : homeService.getSiteList()) {
+					webScrollingSearch((String) search.get("NAME"), (String) site.get("URL"));
+				}
+	
+				// DB 업데이트
+				
+				HashMap<String, Object> data2 = new HashMap<String, Object>();
+				
+				data2.put("NAME", search.get("NAME"));
+				data2.put("STAT", "END");
+				homeService.updateThread(data2);
+			}
+		}
+	
+	}
+	
 	class SearchThread extends Thread{
 		
 		String name ;
@@ -94,14 +165,19 @@ public class HomeController {
 				HashMap<String, Object> data = new HashMap<String, Object>();
 				
 				data.put("NAME", name);
+				data.put("STAT", "START");
 				homeService.insertThread(data);
 				for (HashMap<String, Object> site : homeService.getSiteList()) {
-					System.out.println("SITE URL :: "+(String) site.get("URL"));
 					webScrollingSearch(name, (String) site.get("URL"));
 				}
 
 				// DB 업데이트
-				homeService.updateThread(data);
+				
+				HashMap<String, Object> data2 = new HashMap<String, Object>();
+				
+				data2.put("NAME", name);
+				data2.put("STAT", "END");
+				homeService.updateThread(data2);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -113,8 +189,11 @@ public class HomeController {
 
 		Boolean result = false;
 		
-		System.out.println("scrolling start :: " + url);
-		
+		HashMap<String, Object> data = new HashMap<String, Object>();
+		data.put("NAME", name);
+		data.put("STAT", "SEARCH");
+		homeService.updateThread(data);
+
 		if (url.contains("torrentboza")) {
 			result = homeService.torrentbozadown(name, url);
 		}

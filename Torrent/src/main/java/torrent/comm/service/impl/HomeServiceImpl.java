@@ -73,6 +73,11 @@ public class HomeServiceImpl implements HomeService{
 			}
 		}
 		
+		HashMap<String, Object> data1 = new HashMap<String, Object>();
+		data1.put("NAME", title1);
+		data1.put("STAT", "DOWN");
+		updateThread(data1);
+		
 		for (HashMap<String, Object> content : resultList) {
 			
 			Boolean db = true;
@@ -162,6 +167,11 @@ public class HomeServiceImpl implements HomeService{
 		Boolean result = false;
 		
 		ArrayList<HashMap<String, Object>> contentList  = torrentmap.down(title1, url1);
+		
+		HashMap<String, Object> data1 = new HashMap<String, Object>();
+		data1.put("NAME", title1);
+		data1.put("STAT", "DOWN");
+		updateThread(data1);
 		
 			for (HashMap<String, Object> content : contentList) {
 				
