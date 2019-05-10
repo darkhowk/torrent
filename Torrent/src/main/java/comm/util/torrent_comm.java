@@ -63,6 +63,7 @@ public class torrent_comm {
 			setView("720");
 		}
 		
+		// find item with name
 		for (Element tmpitem : tmpList) {
 			
 			Pattern infoPattern = Pattern.compile(".*"+name+".*"+view+".*"+rill);

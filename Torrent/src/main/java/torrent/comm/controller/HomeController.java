@@ -33,6 +33,29 @@ import torrent.comm.service.HomeService;
 @Controller
 public class HomeController {
 	
+	
+	/*
+	 *	1. 검색어 
+	 *		제목
+	 *		ep
+	 *		season
+	 *		화질
+	 *		릴
+	 *		타입
+	 *
+	 *	2. 리턴
+	 *		페이지..?
+	 *
+	 *	3. 다운
+	 *		체크, 다운
+	 *
+	 *
+	 *
+	 * 제목으로만.. 
+	 * 1 to last
+	 * */
+	
+	
 	@Resource(name="homeService")
 	private HomeService homeService;
 	
@@ -89,31 +112,32 @@ public class HomeController {
 		// COMM CODE PRGRAM TYPE ADD
 		String name = (String) data.get("search");
 		
-		// DB 스레드 확인후 시작
-	//	int count = ((BigDecimal) ((Object) homeService.checkAutoThread().get("COUNT"))).intValue();
-		
-		// DB에서 검색 목록 가져옴. EP 도 가져옴.
-		
-		List<HashMap<String, Object>> searchList = homeService.getMenuList();
-	//	if (count <= 0) {
 			Timer timer = new Timer();
 			TimerTask task = new TimerTask() {
+				// DB 스레드 확인후 시작
+				//	int count = ((BigDecimal) ((Object) homeService.checkAutoThread().get("COUNT"))).intValue();
 				
-				@Override
-				public void run() {
-					Thread auto = new AutoThread(searchList);
-					auto.start();
-				}
-			};
+				// DB에서 검색 목록 가져옴. EP 도 가져옴.
+				
+				List<HashMap<String, Object>> searchList = homeService.getMenuList();
+				//	if (count <= 0) {
+				
+					@Override
+					public void run() {
+						Thread auto = new AutoThread(searchList);
+						auto.start();
+					}
+			//	}
+			//	else {
+			//		result.put("result", "wait");
 			
+			//	}
+			
+			};
+
 			//timer.schedule(task, 1000, 1000);
 			timer.schedule(task, 1000, 360000);
 		
-	//	}
-	//	else {
-	//		result.put("result", "wait");
-			
-	//	}
 		return result;
 	}
 
