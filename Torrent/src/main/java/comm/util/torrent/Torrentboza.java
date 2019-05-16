@@ -75,10 +75,8 @@ public class Torrentboza {
 		String name = getName();
 		String tmpName = name.replace(" ", "+");
 		String ep = getEp();
-		String season = getSeason();
 		
 		Boolean ep_yn = false;
-		Boolean se_yn = false;
 		
 		ArrayList<HashMap<String, Object>> content = new ArrayList<HashMap<String, Object>>();
 		
@@ -94,10 +92,6 @@ public class Torrentboza {
 				else {
 					
 				}
-				
-				if (season.equals("")) {
-					se_yn = true;
-				}
 				/* Pattern namePattern = Pattern.compile("^*+"+name+"+.*$");
 				Matcher nameMatcher = namePattern.matcher(el.text());
 				 */
@@ -107,7 +101,7 @@ public class Torrentboza {
 			/*	Pattern sePattern = Pattern.compile("^*+.+"+season+"+.*$");
 				Matcher seMatcher = sePattern.matcher(el.text());
 			*/
-				if (epMatcher.find() || (ep_yn && se_yn)) {
+				if (epMatcher.find() || ep_yn) {
 					
 					HashMap<String , Object> item = new HashMap<String, Object>();
 					Connection conn2 = Jsoup.connect(el.select(".item-subject").attr("href")).header("User-Agent", "Mozilla/5.0");
@@ -133,53 +127,5 @@ public class Torrentboza {
 			e1.printStackTrace();
 		}
 		return content;
-
 	}
-	public static int downList(ArrayList<HashMap<String, Object>> contentList ) {
-		int result = 0;
-		for (HashMap<String, Object> content : contentList) {
-			
-			Connection conn = Jsoup.connect((String) content.get("url")).header("User-Agent", "Mozilla/5.0");
-			Document doc;
-			
-			try {
-				doc = conn.get();
-
-				String magnet = "";
-				String tmpMagnet = doc.select(".list-group-item").text();
-				
-				System.out.println("tmp Magnet :: " + tmpMagnet);
-				
-				Pattern p = Pattern.compile("^*+.+(magnet:?)+.*$");
-				Matcher m = p.matcher(tmpMagnet);
-				
-				if (m.matches()) {
-					magnet = tmpMagnet.substring(tmpMagnet.indexOf("magnet:?"), tmpMagnet.length());
-				}
-
-				String file = doc.select(".view_file_download").attr("href");
-				String wr_id = file.substring(file.indexOf("wr_id=")+6, file.indexOf("&page="));
-				String page = file.substring(file.indexOf("&page=")+6);
-				
-				
-				
-				if (magnet.equals("")) {
-					result++;
-					String file_url = "https://torrentboza.com/bbs/download.php?bo_table=ent&wr_id="+wr_id+"&no=1&page="+page;
-					content.put("file_url", file_url);
-					TorrentComm.file_down(content);
-				}
-				else {
-					result++;
-					content.put("magnet", magnet);
-					TorrentComm.magnet_add(content);
-				}
-			}
-			catch (Exception e1) {
-				e1.printStackTrace();
-			}
-		}
-		return result;
-	}
-	
 }

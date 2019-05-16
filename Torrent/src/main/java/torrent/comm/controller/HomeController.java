@@ -80,7 +80,7 @@ public class HomeController {
 					data.put("NAME", name);
 					data.put("STAT", "SEARCH");
 					homeService.updateThread(data1);
-					TorrentComm.webScrollingSearch(name, (String) site.get("URL"));
+					TorrentComm.search(name, (String) site.get("URL"));
 				}
 
 				// DB 업데이트

@@ -33,19 +33,19 @@ public class Torrentmap {
 					doc = conn.get();
 					
 					// get item from pageitem with name
-					ArrayList<Element> tmpItemList = TorrentComm.list_find_name(doc.select(".td_subject"), name);
+			//		ArrayList<Element> tmpItemList = TorrentComm.list_find_name(doc.select(".td_subject"), name);
 					
 					// make item list-map
-					for (Element tmpItem : tmpItemList) {
+				/*	for (Element tmpItem : tmpItemList) {
 						String tmp = tmpItem.text().substring(tmpItem.text().indexOf(".E")+1);
 						String ep = tmp.substring(0, tmp.indexOf("."));
 						HashMap<String, Object> content = new HashMap<String, Object>();
 						content.put("name", tmpItem.text());
 						content.put("title", name);
 						content.put("ep", ep);
-						contentList.add(content);
-					} // make item end
-				
+						contentList.add(content);*/
+				/*	} // make item end
+				*/
 			}// page Search end
 		} 
 		catch (Exception e1) {

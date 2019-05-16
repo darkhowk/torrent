@@ -43,8 +43,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 					
 					String url = (String) site.get("URL");
 					String name = (String) item.get("NAME");
+					String ep = (String) item.get("EP");
 					if (url.contains("torrentboza")) {
-						Torrentboza.Search(name, url);
+						TorrentComm.torrent_down(Torrentboza.Search(name, url, ep ));
 					}
 					else if (url.contains("torrentmap")) {
 						Torrentmap.Search(name, url);
