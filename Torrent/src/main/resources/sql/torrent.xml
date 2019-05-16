@@ -14,6 +14,16 @@
 		WHERE 1=1 
 			AND A.USE_YN = 'Y'
 	</select>
+	<select id="getItems" parameterType="HashMap" resultType="java.util.LinkedHashMap">
+		SELECT
+			  NAME
+			, EP
+			, SEASON
+		FROM
+			TORRENT.TORRENT_AUTO_LIST
+		WHERE 1=1
+		AND 
+	</select>
 	<select id="check_ep" parameterType="HashMap" resultType="String">
 		SELECT 
 			COUNT(*)

@@ -1,15 +1,22 @@
-package comm.util;
+package comm.util.torrent;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
 import ca.benow.transmission.TransmissionClient;
 
-public class torrent_comm {
+public class TorrentComm {
 
 	private static  ArrayList<Element> tmpList;
 	private static  String name;
@@ -41,11 +48,11 @@ public class torrent_comm {
 		return list_find_name();
 	}
 	
-	public static  Boolean magnet_add(String url) {
+	public static  Boolean magnet_add(HashMap<String, Object> data) {
 		try {
-			URL transmission_url = new URL("http://175.193.19.231:9091/transmission/rpc/");
+			URL transmission_url = new URL("http://m:9091/transmission/rpc/");
 			TransmissionClient tc = new TransmissionClient(transmission_url);
-			tc.addTorrent(url);
+			tc.addTorrent((String)data.get("magnet"));
 			return true;
 			
 		} catch (Exception e) {
@@ -53,6 +60,28 @@ public class torrent_comm {
 			return false;
 		}
 		
+	}
+	
+	public static Boolean file_down(HashMap<String, Object> data) {
+		
+		Boolean result = false;
+
+		try {
+			ByteBuffer buffer = ByteBuffer.wrap(Jsoup.connect((String)data.get("file_url")).header("User-Agent", "Mozilla/5.0").ignoreContentType(true).execute().bodyAsBytes());
+			File tmpFile = new File("/DATA/Watch/"+data.get("title")+"."+data.get("ep")+".torrent");
+			
+			result = tmpFile.createNewFile();
+			
+			FileOutputStream fis = new FileOutputStream(tmpFile);
+			FileChannel cin = fis.getChannel();
+			cin.write(buffer);
+			cin.close();
+			fis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
 	}
 	
 	private static  ArrayList<Element> list_find_name() {
@@ -107,6 +136,19 @@ public class torrent_comm {
 	public static  void setRill(String rill1) {
 		rill = rill1;
 	}
+
+	public static int webScrollingSearch(String name, String url) {
+
+		int result = 0;
 	
+		if (url.contains("torrentboza")) {
+			result = result + Torrentboza.downList(Torrentboza.Search(name, url));
+		}
+		else if (url.contains("torrentmap")) {
+			result = result + Torrentmap.downList(Torrentmap.Search(name, url));
+		}
+		
+		return result;
+	}
 }
 

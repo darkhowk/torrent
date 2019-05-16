@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import comm.util.WebComm;
 import torrent.comm.service.AdminService;
 
 @Controller
@@ -32,17 +33,8 @@ public class AdminController {
 	 */
 	@RequestMapping(value = "/comm_code", method = {RequestMethod.GET, RequestMethod.POST})
 	public ModelAndView comm_code(Locale locale, Model model) throws IOException, JSONException {
-		ModelAndView mv = new ModelAndView();
-		mv = HomeController.TorrentCheck();
-		mv.addObject("page", "admin/comm_code.jsp");
-		
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		
-		String formattedDate = dateFormat.format(date);
-		
-		model.addAttribute("serverTime", formattedDate );
-		
+		ModelAndView mv = WebComm.TorrentCheck();
+		mv.addObject("page", "/admin/comm_code.jsp");
 		
 		List<HashMap<String, Object>> data = adminService.getCommCode();
 		System.out.println(data.size());
