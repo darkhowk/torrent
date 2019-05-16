@@ -8,30 +8,104 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
 
 import ca.benow.transmission.TransmissionClient;
 
 public class TorrentComm {
 	
-	public static void search(String name, String url) {
-		
+	public static String name;
+	public static String url;
+	public static String ep;
+	public static String season;
+	
+	public static String getName() {
+		return name;
+	}
+
+	public static void setName(String name) {
+		TorrentComm.name = name;
+	}
+
+	public static String getUrl() {
+		return url;
+	}
+
+	public static void setUrl(String url) {
+		TorrentComm.url = url;
+	}
+
+	public static String getEp() {
+		return ep;
+	}
+
+	public static void setEp(String ep) {
+		TorrentComm.ep = ep;
+	}
+
+	public static String getSeason() {
+		return season;
+	}
+
+	public static void setSeason(String season) {
+		TorrentComm.season = season;
+	}
+
+	public static ArrayList<HashMap<String, Object>> search(String name, String url, String ep) {
+		setName(name);
+		setUrl(url);
+		setEp(ep);
+		setSeason("");
+		return search();
+	}
+	
+	public static ArrayList<HashMap<String, Object>> search(String name, String url) {
+		setName(name);
+		setUrl(url);
+		setEp(ep);
+		setSeason("");
+		return search();
+	}
+	public static ArrayList<HashMap<String, Object>> search() {
+		ArrayList<HashMap<String, Object>> result = null;
 		if (url.contains("torrentboza")) {
-			torrent_down(Torrentboza.Search(name, url));
+			result = Torrentboza.Search(getName(), getUrl(), getEp(), getSeason());
 		}
 		else {
 			
 		}
 		
+		return result;
+		
+	}
+	
+
+	public static Boolean torrent_down(HashMap<String, Object> item) {
+
+		Boolean result = false;
+		
+		// 마그넷이 비어있으면 파일 다운.
+		if (item.get("magnet").equals("")) {
+			
+			// 파일도 비어있으면 ??
+			if (item.get("file").equals("")) {
+				System.out.println("??");
+			}
+			else {
+				file_down(item);
+			}
+		}
+		else {
+			magnet_add(item);
+		}
+		
+		return result;
 	}
 	
 	public static  Boolean magnet_add(HashMap<String, Object> data) {
 		try {
-			URL transmission_url = new URL("http://m:9091/transmission/rpc/");
+			URL transmission_url = new URL("http://memorandum.iptime.org:9091/transmission/rpc/");
 			TransmissionClient tc = new TransmissionClient(transmission_url);
 			tc.addTorrent((String)data.get("magnet"));
 			return true;
@@ -65,14 +139,5 @@ public class TorrentComm {
 		return result;
 	}
 
-	public static void torrent_down(ArrayList<HashMap<String, Object>> search) {
-
-		// 해당 리스트에서 magnet 이 있으면 magnet으로. 없으면 file 로.
-		
-
-		
-		
-		
-	}
 }
 

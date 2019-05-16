@@ -33,7 +33,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 			
 			// 1. DB에서 사이트 url 가져옴.
 			List<HashMap<String, Object>> sites = scheduleDao.getTorrentSite();
-			// 2. DB에서 찾을 녀석들 가져옴
+			// 2. DB에서 찾을 녀석들 가져옴 ( 해당 ep는 마지막 다운받은 ep)
 			List<HashMap<String, Object>> items = scheduleDao.getItems();
 
 			// 3. 사이트 뒤짐
@@ -44,11 +44,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 					String url = (String) site.get("URL");
 					String name = (String) item.get("NAME");
 					String ep = (String) item.get("EP");
-					if (url.contains("torrentboza")) {
-						TorrentComm.torrent_down(Torrentboza.Search(name, url, ep ));
-					}
-					else if (url.contains("torrentmap")) {
-						Torrentmap.Search(name, url);
+					ArrayList<HashMap<String, Object>> tmpItems = TorrentComm.search( url, name, ep );
+					
+					// 다운받을것이 있으면
+					if (tmpItems.size() > 0) {
+						for (HashMap<String, Object> tmpItem : tmpItems) {
+							if (TorrentComm.torrent_down(tmpItem)) {
+								// TORRENT_LOG 에 기록,
+								scheduleDao.insertItem(tmpItem);
+								// TORRENT_AUTO_LIST 에 마지막 EP update
+								tmpItem.put("SEQ", item.get("SEQ"));
+								scheduleDao.updateAutoList(tmpItem);
+							}
+						}
+						
+						
 					}
 				}
 			}
@@ -69,7 +79,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 			System.out.println("torrent Delete Start" + now);
 			
 			try {
-				URL url = new URL("http://memorandum.tk:9091/transmission/rpc/");
+				URL url = new URL("http://memorandum.iptime.org:9091/transmission/rpc/");
 			
 				TransmissionClient tc = new TransmissionClient(url);
 				List<TorrentStatus> list = tc.getAllTorrents();

@@ -48,5 +48,24 @@
 			)
 	
 	</insert>
+	<insert id="insertItem" parameterType="HashMap" >
+		INSERT INTO
+			TORRENT.TORRENT_LOG
+			VALUES
+			(
+				  TORRENT_LOG_SEQ.NEXTVAL
+				, #{NAME }
+				, #{EP }
+				, #{SITE }
+				, #{ID }
+				, #{STATE }
+				, SYSDATE
+			)
+	
+	</insert>
+	<update id="updateAutoList" parameterType="HashMap">
+	
+	</update>
+
 	
 </mapper>

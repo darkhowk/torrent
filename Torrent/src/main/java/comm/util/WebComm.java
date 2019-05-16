@@ -23,7 +23,7 @@ public class WebComm {
 			int down = 0;
 			int all = 0;
 			
-			URL url = new URL("http://175.193.19.231:9091/transmission/rpc/");
+			URL url = new URL("http://memorandum.iptime.org:9091/transmission/rpc/");
 			TransmissionClient tc = new TransmissionClient(url);
 			List<TorrentStatus> list = tc.getAllTorrents();
 			ArrayList<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();

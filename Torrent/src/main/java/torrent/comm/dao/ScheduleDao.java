@@ -11,20 +11,25 @@ import org.springframework.stereotype.Repository;
 public class ScheduleDao {
 		
 		@Autowired
-		 protected SqlSessionTemplate session;
-		
+		protected SqlSessionTemplate session;
 		
 		public void deleteTorrent(String name) {
 			session.update("TORRNET.DeleteTorrent", name);
 		}
 
-
 		public List<HashMap<String, Object>> getTorrentSite() {
 			return session.selectList("TORRENT.getUrl");
 		}
 
-
 		public List<HashMap<String, Object>> getItems() {
 			return session.selectList("TORRENT.getItems");
+		}
+
+		public void insertItem(HashMap<String, Object> tmpItem) {
+			session.insert("TORRENT.insertItem", tmpItem);
+		}
+
+		public void updateAutoList(HashMap<String, Object> tmpItem) {
+			session.update("TORRENT.updateAutoList", tmpItem);
 		}
 }

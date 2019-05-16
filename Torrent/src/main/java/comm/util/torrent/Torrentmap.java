@@ -58,8 +58,8 @@ public class Torrentmap {
 		
 		int result = 0;
 		for (HashMap<String, Object> content : contentList) {
-			String url = (String) content.get("url");
-			String wr_id = url.substring(url.indexOf("wr_id=")+6, url.indexOf("&page="));
+		//	String url = (String) content.get("url");
+		//	String wr_id = url.substring(url.indexOf("wr_id=")+6, url.indexOf("&page="));
 			Connection conn = Jsoup.connect((String) content.get("url")).header("User-Agent", "Mozilla/5.0");
 			Document doc;
 			

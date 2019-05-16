@@ -1,24 +1,12 @@
 package torrent.comm.service.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
-import comm.util.torrent.TorrentComm;
-import comm.util.torrent.Torrentboza;
-import comm.util.torrent.Torrentmap;
 import torrent.comm.dao.HomeDao;
 import torrent.comm.service.HomeService;
 

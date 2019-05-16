@@ -3,8 +3,6 @@ package torrent.comm.service;
 import java.util.HashMap;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 public interface HomeService {
 
 	List<HashMap<String, Object>> getMenuList();
